@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FocusTrack
 
-## Getting Started
+### Sistema pessoal de gerenciamento de metas semanais e finanças.
 
-First, run the development server:
+## Stack
+
+- **Next.js 16** (App Router)
+- **TypeScript**
+- **Tailwind CSS**
+- **Prisma** + **PostgreSQL**
+- **Server Actions**
+
+## Quick Start
 
 ```bash
+# 1. Subir banco
+docker compose up -d
+
+# 2. Aplicar migrations
+npx prisma migrate dev --name init
+
+# 3. Rodar dev
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Estrutura do Projeto
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+app/
+├── page.tsx              # Dashboard (Server Component)
+├── tasks/actions/        # Server Actions de tarefas
+├── finances/actions/      # Server Actions de finanças
+└── generated/prisma/     # Prisma Client
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+components/
+├── ui/                   # Button, Card, Input
+├── tasks/                # TaskList (Client Component)
+└── finances/             # FinancesOverview (Client Component)
 
-## Learn More
+lib/
+├── prisma.ts             # Cliente Prisma singleton
+└── utils.ts              # Helpers
 
-To learn more about Next.js, take a look at the following resources:
+prisma/
+└── schema.prisma          # Models: Task, Transaction, Category, SavingsGoal
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Conceitos Chave
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Server Components vs Client Components
+- **Server** (`app/page.tsx`): Roda no servidor, acesso direto ao banco
+- **Client** (`"use client"`): Interatividade no navegador (React hooks)
 
-## Deploy on Vercel
+### Server Actions
+Funções `"use server"` que rodam no servidor e podem ser chamadas pelo cliente.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Prisma
+ORM que gera um cliente tipado baseado no schema do banco.

@@ -23,3 +23,15 @@ export function getWeekBounds(date: Date = new Date()) {
   
   return { weekStart: monday, weekEnd: sunday };
 }
+
+export function getPreviousWeek(weekStart: Date): Date {
+  const previousWeek = new Date(weekStart);
+  previousWeek.setDate(previousWeek.getDate() - 7);
+  return previousWeek;
+}
+
+export function getNextWeek(weekStart: Date): Date {
+  const nextWeek = new Date(weekStart);
+  nextWeek.setDate(nextWeek.getDate() + 7);
+  return nextWeek;
+}

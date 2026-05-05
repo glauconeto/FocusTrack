@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import { createTransaction, deleteTransaction } from "@/app/finances/actions";
-import { getCategories } from "@/app/finances/actions/categories";
+import { getCategoriesByType } from "@/app/finances/actions/categories";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { formatCurrency } from "@/lib/utils";
@@ -34,6 +34,11 @@ export function FinancesOverview({ transactions, summary }: FinancesOverviewProp
   const [type, setType] = useState<"INCOME" | "EXPENSE">("EXPENSE");
   const [categoryId, setCategoryId] = useState("");
   const [description, setDescription] = useState("");
+  const [categories, setCategories] = useState<any[]>([]);
+
+  useEffect(() => {
+    getCategoriesByType(type).then(setCategories);
+  }, [type]);
 
   const balance = summary.monthIncome - summary.monthExpense;
 
@@ -50,6 +55,11 @@ export function FinancesOverview({ transactions, summary }: FinancesOverviewProp
       setDescription("");
       setShowForm(false);
     });
+  };
+
+  const handleTypeChange = (newType: "INCOME" | "EXPENSE") => {
+    setType(newType);
+    setCategoryId(""); // Clear category when type changes
   };
 
   const handleDelete = (id: string) => {
@@ -88,7 +98,7 @@ export function FinancesOverview({ transactions, summary }: FinancesOverviewProp
           <div className="flex gap-2">
             <button
               type="button"
-              onClick={() => setType("INCOME")}
+              onClick={() => handleTypeChange("INCOME")}
               className={`flex-1 py-2 rounded-lg font-medium transition-colors ${
                 type === "INCOME"
                   ? "bg-green-500 text-white"
@@ -99,7 +109,7 @@ export function FinancesOverview({ transactions, summary }: FinancesOverviewProp
             </button>
             <button
               type="button"
-              onClick={() => setType("EXPENSE")}
+              onClick={() => handleTypeChange("EXPENSE")}
               className={`flex-1 py-2 rounded-lg font-medium transition-colors ${
                 type === "EXPENSE"
                   ? "bg-red-500 text-white"
@@ -122,6 +132,11 @@ export function FinancesOverview({ transactions, summary }: FinancesOverviewProp
             className="w-full px-3 py-2 rounded-lg border border-gray-300"
           >
             <option value="">Selecione a categoria</option>
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
           </select>
           <Input
             placeholder="Descrição (opcional)"
